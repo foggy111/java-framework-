@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.OrderMapper">
+
+    <!-- Basic Order mapping (`orders` table). mapUnderscoreToCamelCase is on. -->
+    <resultMap id="OrderResultMap" type="com.example.entity.Order">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="amount" column="amount"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- Order + nested User (association) -->
+    <resultMap id="OrderWithUserResultMap" type="com.example.entity.Order">
+        <id property="id" column="oid"/>
+        <result property="userId" column="user_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="amount" column="amount"/>
+        <result property="createdAt" column="created_at"/>
+        <association property="user" javaType="com.example.entity.User">
+            <id property="id" column="uid"/>
+            <result property="username" column="username"/>
+        </association>
+    </resultMap>
+
+    <!-- User + collection of Order (one-to-many). Requires User.orders field. -->
+    <resultMap id="UserWithOrders" type="com.example.entity.User">
+        <id property="id" column="uid"/>
+        <result property="username" column="username"/>
+        <collection property="orders" ofType="com.example.entity.Order">
+            <id property="id" column="oid"/>
+            <result property="userId" column="user_id"/>
+            <result property="productName" column="product_name"/>
+            <result property="amount" column="amount"/>
+            <result property="createdAt" column="created_at"/>
+        </collection>
+    </resultMap>
+
+    <select id="findAll" resultMap="OrderResultMap">
+        SELECT id, user_id, product_name, amount, created_at
+        FROM `orders`
+    </select>
+
+    <select id="findById" parameterType="int" resultMap="OrderResultMap">
+        SELECT id, user_id, product_name, amount, created_at
+        FROM `orders`
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.example.entity.Order" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `orders` (user_id, product_name, amount)
+        VALUES (#{userId}, #{productName}, #{amount})
+    </insert>
+
+    <!-- Multi-table JOIN: Order fields + nested user -->
+    <select id="findOrdersWithUser" resultMap="OrderWithUserResultMap">
+        SELECT
+            o.id           AS oid,
+            o.user_id      AS user_id,
+            o.product_name AS product_name,
+            o.amount       AS amount,
+            o.created_at   AS created_at,
+            u.id           AS uid,
+            u.username     AS username
+        FROM `orders` o
+        LEFT JOIN `user` u ON u.id = o.user_id
+        ORDER BY o.id
+    </select>
+
+    <!-- One user + collection of orders -->
+    <select id="findUserWithOrders" parameterType="int" resultMap="UserWithOrders">
+        SELECT
+            u.id           AS uid,
+            u.username     AS username,
+            o.id           AS oid,
+            o.user_id      AS user_id,
+            o.product_name AS product_name,
+            o.amount       AS amount,
+            o.created_at   AS created_at
+        FROM `user` u
+        LEFT JOIN `orders` o ON u.id = o.user_id
+        WHERE u.id = #{userId}
+    </select>
+
+    <!-- All users with their orders -->
+    <select id="findAllUsersWithOrders" resultMap="UserWithOrders">
+        SELECT
+            u.id           AS uid,
+            u.username     AS username,
+            o.id           AS oid,
+            o.user_id      AS user_id,
+            o.product_name AS product_name,
+            o.amount       AS amount,
+            o.created_at   AS created_at
+        FROM `user` u
+        LEFT JOIN `orders` o ON u.id = o.user_id
+        ORDER BY u.id, o.id
+    </select>
+
+</mapper>

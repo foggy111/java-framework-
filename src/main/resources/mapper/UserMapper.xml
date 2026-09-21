@@ -3,29 +3,29 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.chapter01.UserMapper">
+<mapper namespace="com.example.mapper.UserMapper">
 
     <!-- ==================== 原有方法（保持兼容）==================== -->
 
     <!-- 查询所有用户 -->
-    <select id="findAllByxml" resultType="com.entity.User">
+    <select id="findAllByxml" resultType="com.example.entity.User">
         SELECT * FROM user
     </select>
 
     <!-- 根据ID查询用户 -->
-    <select id="findById" parameterType="int" resultType="com.entity.User">
+    <select id="findById" parameterType="int" resultType="com.example.entity.User">
         SELECT * FROM user WHERE id = #{id}
     </select>
 
     <!-- 添加用户 -->
-    <insert id="addUser" parameterType="com.entity.User"
+    <insert id="addUser" parameterType="com.example.entity.User"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user(username, password, email)
         VALUES(#{username}, #{password}, #{email})
     </insert>
 
     <!-- 更新用户 -->
-    <update id="updateUser" parameterType="com.entity.User">
+    <update id="updateUser" parameterType="com.example.entity.User">
         UPDATE user
         SET username = #{username},
             password = #{password},
@@ -38,22 +38,20 @@
         DELETE FROM user WHERE id = #{id}
     </delete>
 
-    <!-- ==================== 别名方法（与 HTML 教学一致）==================== -->
-
     <!-- 根据ID查询用户（别名：selectById） -->
-    <select id="selectById" parameterType="int" resultType="com.entity.User">
+    <select id="selectById" parameterType="int" resultType="com.example.entity.User">
         SELECT * FROM user WHERE id = #{id}
     </select>
 
     <!-- 添加用户（别名：insert） -->
-    <insert id="insert" parameterType="com.entity.User"
+    <insert id="insert" parameterType="com.example.entity.User"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user(username, password, email)
         VALUES(#{username}, #{password}, #{email})
     </insert>
 
     <!-- 更新用户（别名：update） -->
-    <update id="update" parameterType="com.entity.User">
+    <update id="update" parameterType="com.example.entity.User">
         UPDATE user
         SET username = #{username},
             password = #{password},
@@ -67,8 +65,37 @@
     </delete>
 
     <!-- 查询所有用户（别名：selectAll） -->
-    <select id="selectAll" resultType="com.entity.User">
+    <select id="selectAll" resultType="com.example.entity.User">
         SELECT * FROM user
     </select>
 
+    <select id="countUser" resultType="int">
+        SELECT COUNT(*) FROM user
+    </select>
+
+    <select id="maxUserId" resultType="int">
+        SELECT MAX(id) FROM user
+    </select>
+
+    <select id="minUserId" resultType="int">
+        SELECT MIN(id) FROM user
+    </select>
+
+    <select id="findAll" resultType="com.example.entity.User">
+        SELECT * FROM user
+    </select>
+
+    <select id="findAll" resultType="com.example.entity.User">
+        SELECT * FROM user
+    </select>
+
+    <select id="selectAll" resultType="com.entity.User">
+        SELECT id, username, password, email, created_at, updated_at FROM user
+    </select>
+
+    <select id="selectAllByVo" resultType="com.entity.Vo">
+        SELECT id AS uid, username AS uname, email AS mail FROM user
+    </select>
+
 </mapper>
+
