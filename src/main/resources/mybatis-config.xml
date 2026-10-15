@@ -23,5 +23,7 @@
         <mapper class="com.example.mapper.UserMapper"/>
         <mapper class="com.example.mapper.UserMapperAnnotation"/>
         <mapper resource="mapper/OrderMapper.xml"/>
+        <mapper resource="mapper/ProductMapper.xml"/>
+        <mapper class="com.example.mapper.SupplierMapper"/>
     </mappers>
 </configuration>

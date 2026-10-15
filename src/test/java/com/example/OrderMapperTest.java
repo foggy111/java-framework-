@@ -33,7 +33,6 @@ public class OrderMapperTest {
         orderMapper = sqlSession.getMapper(OrderMapper.class);
     }
 
-    @After
     public void tearDown() {
         if (sqlSession != null) {
             sqlSession.close();

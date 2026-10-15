@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 问题1 (XML 方式): 哪个产品被哪个客户买走了, 哪个供应商提供 -->
+<mapper namespace="com.example.mapper.ProductMapper">
+
+    <resultMap id="productDetailMap" type="com.example.entity.Product">
+        <id     property="id"         column="id"/>
+        <result property="name"       column="name"/>
+        <result property="price"      column="price"/>
+        <result property="customerId" column="customer_id"/>
+
+        <!-- 多对一: 产品 -> 买走它的客户 -->
+        <association property="customer" javaType="com.example.entity.Customer">
+            <id     property="id"    column="c_id"/>
+            <result property="name"  column="c_name"/>
+            <result property="phone" column="c_phone"/>
+        </association>
+
+        <!-- 多对多: 产品 -> 供应商 (通过中间表 product_supplier) -->
+        <collection property="suppliers" ofType="com.example.entity.Supplier">
+            <id     property="id"    column="s_id"/>
+            <result property="name"  column="s_name"/>
+            <result property="phone" column="s_phone"/>
+        </collection>
+    </resultMap>
+
+    <!-- LEFT JOIN: 没卖出的产品 / 没有供应商的产品也会列出来 -->
+    <select id="findAllWithCustomerAndSuppliers" resultMap="productDetailMap">
+        SELECT p.id,
+               p.name,
+               p.price,
+               p.customer_id,
+               c.id    AS c_id,
+               c.name  AS c_name,
+               c.phone AS c_phone,
+               s.id    AS s_id,
+               s.name  AS s_name,
+               s.phone AS s_phone
+        FROM product p
+                 LEFT JOIN customer c          ON p.customer_id = c.id
+                 LEFT JOIN product_supplier ps ON ps.product_id = p.id
+                 LEFT JOIN supplier s          ON s.id = ps.supplier_id
+        ORDER BY p.id, s.id
+    </select>
+</mapper>
